@@ -1,0 +1,22 @@
+SELECT
+    CASE
+        WHEN EXTRACT(HOUR FROM t.created) BETWEEN 0 AND 5 THEN 'Early Morning'
+        WHEN EXTRACT(HOUR FROM t.created) BETWEEN 6 AND 11 THEN 'Morning'
+        WHEN EXTRACT(HOUR FROM t.created) BETWEEN 12 AND 17 THEN 'Afternoon'
+        WHEN EXTRACT(HOUR FROM t.created) BETWEEN 18 AND 23 THEN 'Evening'
+    END AS day_part,
+    round(AVG(t.amount),2) AS average_amount,
+    round(sum(t.amount),2) AS sum_amount
+    ,t.service_id
+FROM trans as t
+where 1=1 and
+      t.service in (123,124,125,126) and
+      t.partition_date between '2004-03-01' and '2004-04-30' and
+      t.status = 1 and
+      t.parent is null
+GROUP BY 1,4;
+
+-- `t.created` holds the full timestamp (date and time), offering a precise moment of transaction creation. 
+-- `t.partition_date`, however, stores only the date (YYYY-MM-DD), 
+-- and is partitioned to enhance query performance by splitting the data into manageable chunks, 
+-- reducing the time required for data retrieval, especially for large datasets.
