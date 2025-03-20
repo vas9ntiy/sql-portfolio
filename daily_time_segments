@@ -17,6 +17,5 @@ where 1=1 and
 GROUP BY 1,4;
 
 -- `t.created` holds the full timestamp (date and time), offering a precise moment of transaction creation. 
--- `t.partition_date`, however, stores only the date (YYYY-MM-DD), 
--- and is partitioned to enhance query performance by splitting the data into manageable chunks, 
+-- `t.partition_date`, however, stores only the date (YYYY-MM-DD), and is partitioned to enhance query performance by splitting the data into manageable chunks, 
 -- reducing the time required for data retrieval, especially for large datasets.
