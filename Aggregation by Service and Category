@@ -1,0 +1,37 @@
+SELECT
+    t.id AS transaction_id,
+    t.user_id,
+    t.service_id,
+    CASE 
+        WHEN s.category = 'premium' THEN 'High-end Service'
+        WHEN s.category = 'standard' THEN 'Regular Service'
+        ELSE 'Basic Service'
+    END AS service_type,
+    ROUND(AVG(t.amount), 2) AS average_amount,
+    ROUND(SUM(t.amount), 2) AS sum_amount
+FROM trans AS t
+LEFT JOIN (
+    SELECT 
+        id, 
+        category,
+        CASE 
+            WHEN category = 'premium' THEN 'VIP Service'
+            WHEN category = 'standard' THEN 'Regular Service'
+            ELSE 'Basic Service'
+        END AS service_class
+    FROM services
+) AS s ON t.service_id = s.id
+WHERE 1=1
+    AND t.service_id IN (101, 102, 103, 104)
+    AND t.partition_date BETWEEN '2004-05-01' AND '2004-06-30'
+    AND t.status = 1
+    AND t.amount > 50
+GROUP BY 1, 2, 3, 4
+ORDER BY sum_amount DESC;
+
+
+-- `t.created` holds the full timestamp (date and time), offering a precise moment of transaction creation. 
+-- `t.partition_date`, however, stores only the date (YYYY-MM-DD), and is partitioned to enhance query performance by splitting the data into manageable chunks, 
+-- reducing the time required for data retrieval, especially for large datasets.
+-- the `GROUP BY` clause groups the transactions by `transaction_id`, `user_id`, `service_id`, and `service_type`, ensuring that the aggregated results (average and sum amounts) are calculated for each unique combination of these columns.
+
